@@ -1,5 +1,7 @@
-const USE_PROXY = true; // use Node proxy for API key safety
-const PROXY_BASE = "http://localhost:5000/api"; // proxy server
+// Use proxy base dynamically for local or live deployment
+const PROXY_BASE = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api"
+  : "/api"; // works for Render deployment
 
 // DOM elements
 const cityInput = document.getElementById('cityInput');
@@ -25,8 +27,8 @@ const alertText = document.getElementById('alertText');
 const historyList = document.getElementById('historyList');
 
 // Features
-let isCelsius = true; // toggle
-let themeMode = 'dark'; // 'dark' or 'light'
+let isCelsius = true;
+let themeMode = 'dark';
 let lastData = null;
 
 // Event listeners
@@ -35,7 +37,7 @@ cityInput.addEventListener('keydown', e => { if(e.key==='Enter') searchBtn.click
 locBtn.addEventListener('click', useGeolocation);
 downloadBtn.addEventListener('click', downloadPDF);
 
-// Temperature toggle button
+// Temperature toggle
 const tempToggle = document.createElement('button');
 tempToggle.textContent = "°F";
 tempToggle.style.marginLeft = '6px';
@@ -47,10 +49,10 @@ tempToggle.addEventListener('click', () => {
 });
 document.querySelector('.controls').appendChild(tempToggle);
 
-// Theme toggle button
+// Theme toggle
 const themeBtn = document.createElement('button');
 themeBtn.textContent = "Theme";
-themeBtn.id = "themeBtn"; // assign ID for reference
+themeBtn.id = "themeBtn";
 themeBtn.addEventListener('click', () => {
     themeMode = themeMode==='dark' ? 'light' : 'dark';
     applyTheme();
@@ -61,7 +63,7 @@ document.querySelector('.controls').appendChild(themeBtn);
 loadHistory();
 showWelcome();
 
-// Welcome message
+// Welcome
 function showWelcome(){
   cityName.textContent = "Try 'Chennai', 'Mumbai', or use 📍";
   currentCard.classList.add('hide');
@@ -102,7 +104,7 @@ async function searchCoords(lat, lon){
     } finally { showLoading(false); }
 }
 
-// Loading button
+// Loading state
 function showLoading(on){
     if(on){ searchBtn.textContent="Loading..."; searchBtn.disabled=true; }
     else{ searchBtn.textContent="Search"; searchBtn.disabled=false; }
@@ -132,7 +134,28 @@ function renderWeather(data, forecast){
     else alertBanner.classList.add('hidden');
 }
 
-// Update temperature display
+// Update temperature
+function updateTempDisplay() {
+  if (!lastData) return;
+  const data = lastData.current;
+
+  const temp = isCelsius
+    ? Math.round(data.main.temp)
+    : Math.round(data.main.temp * 9 / 5 + 32);
+
+  const feelsTemp = isCelsius
+    ? Math.round(data.main.feels_like)
+    : Math.round(data.main.feels_like * 9 / 5 + 32);
+
+  tempVal.textContent = `${temp}${isCelsius ? '°C' : '°F'}`;
+  feels.textContent = `Feels like ${feelsTemp}${isCelsius ? '°C' : '°F'}`;
+
+  if (lastData.forecast && lastData.forecast.list) {
+    renderForecast(lastData.forecast.list);
+  }
+}
+
+// Forecast rendering
 function renderForecast(list) {
   // Group by day
   const byDay = {};
@@ -142,28 +165,22 @@ function renderForecast(list) {
     byDay[day].push(item);
   });
 
-  // DAILY FORECAST (next 5 days)
+  // DAILY FORECAST
   forecastRow.innerHTML = '';
   Object.keys(byDay).slice(0, 5).forEach(day => {
     const items = byDay[day];
     const pick = items[Math.floor(items.length / 2)];
     const d = new Date(pick.dt * 1000);
-    const dayName = d.toLocaleDateString(undefined, {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    });
+    const dayName = d.toLocaleDateString(undefined, { weekday:'short', day:'numeric', month:'short' });
     const icon = pick.weather[0].main;
-    const temp = isCelsius
-      ? Math.round(pick.main.temp)
-      : Math.round(pick.main.temp * 9 / 5 + 32);
+    const temp = isCelsius ? Math.round(pick.main.temp) : Math.round(pick.main.temp * 9/5 + 32);
     const desc = pick.weather[0].description;
     const elem = document.createElement('div');
     elem.className = 'card';
     elem.innerHTML = `
       <div class="day">${dayName}</div>
       <div class="iconSmall" aria-hidden="true">${emojiForWeather(icon, pick.weather[0].id)}</div>
-      <div class="tempSmall">${temp}${isCelsius ? '°C' : '°F'}</div>
+      <div class="tempSmall">${temp}${isCelsius?'°C':'°F'}</div>
       <div class="smallDesc">${desc}</div>
     `;
     forecastRow.appendChild(elem);
@@ -174,46 +191,19 @@ function renderForecast(list) {
   hourlyForecastRow.innerHTML = '';
   list.slice(0, 12).forEach(item => {
     const d = new Date(item.dt * 1000);
-    const hour = d.getHours().toString().padStart(2, '0');
+    const hour = d.getHours().toString().padStart(2,'0');
     const icon = item.weather[0].main;
-    const temp = isCelsius
-      ? Math.round(item.main.temp)
-      : Math.round(item.main.temp * 9 / 5 + 32);
+    const temp = isCelsius ? Math.round(item.main.temp) : Math.round(item.main.temp * 9/5 + 32);
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
       <div class="day">${hour}:00</div>
       <div class="iconSmall">${emojiForWeather(icon, item.weather[0].id)}</div>
-      <div class="tempSmall">${temp}${isCelsius ? '°C' : '°F'}</div>
+      <div class="tempSmall">${temp}${isCelsius?'°C':'°F'}</div>
     `;
     hourlyForecastRow.appendChild(card);
   });
 }
-// Update temperature values for the main card after unit toggle
-function updateTempDisplay() {
-  if (!lastData) return;
-  const data = lastData.current;
-
-  // Convert temperature if needed
-  const temp = isCelsius
-    ? Math.round(data.main.temp)
-    : Math.round(data.main.temp * 9 / 5 + 32);
-
-  const feelsTemp = isCelsius
-    ? Math.round(data.main.feels_like)
-    : Math.round(data.main.feels_like * 9 / 5 + 32);
-
-  // Update the DOM
-  tempVal.textContent = `${temp}${isCelsius ? '°C' : '°F'}`;
-  feels.textContent = `Feels like ${feelsTemp}${isCelsius ? '°C' : '°F'}`;
-
-  // Rerender forecast cards with new units
-  if (lastData.forecast && lastData.forecast.list) {
-    renderForecast(lastData.forecast.list);
-  }
-}
-
-
 
 // Emoji helper
 function emojiForWeather(main,id){
@@ -226,12 +216,12 @@ function emojiForWeather(main,id){
     return "☁️";
 }
 
-// Set icon and background
+// Icon & background
 function setIconAndBackground(weather){
     const id = weather.id || 800;
     weatherIcon.textContent = emojiForWeather(weather.main,id);
     setBackground(id);
-    applyTheme();  // re-apply to ensure text colors update
+    applyTheme();
 }
 
 function setBackground(weatherId){
@@ -241,7 +231,6 @@ function setBackground(weatherId){
     else if(weatherId===800) bg='linear-gradient(180deg,#ffd86b,#66ccff)';
     else bg='linear-gradient(180deg,#334e68,#0f2b45)';
 
-    // theme priority
     if(themeMode==='dark') bg='linear-gradient(180deg,#071029,#0f2b45)';
     else if(themeMode==='light') bg='linear-gradient(180deg,#e0f7fa,#b2ebf2)';
 
@@ -262,7 +251,6 @@ function applyTheme(){
             .forEach(el => el.style.color = '#e6eef8');
     }
 }
-
 
 // Alerts
 function checkForAlerts(current,forecast){
