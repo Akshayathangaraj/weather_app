@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WeatherWatch — Smart Weather & Alerts</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🌦️</div>
+        <div>
+          <h1>WeatherWatch</h1>
+          <p class="tag">Smart Weather & Disaster Alerts</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="cityInput" type="search" placeholder="Search city (e.g., Mumbai)" aria-label="City" />
+        <button id="searchBtn" title="Search">Search</button>
+        <button id="locBtn" title="Use my location">📍</button>
+        <button id="downloadBtn" title="Download report as PDF">Download PDF</button>
+      </div>
+    </header>
+
+    <section id="alertBanner" class="alert-banner hidden" role="status" aria-live="polite">
+      <strong>Alert:</strong> <span id="alertText"></span>
+    </section>
+
+    <section class="content">
+      <aside class="history" aria-label="Search history">
+        <h3>Recent</h3>
+        <ul id="historyList"></ul>
+      </aside>
+
+      <section class="mainPane">
+        <div id="currentCard" class="card current hide" aria-live="polite">
+          <div class="weather-left">
+            <div id="weatherIcon" class="icon">☀️</div>
+            <div class="temp">
+              <span id="tempVal">—</span><sup>°C</sup>
+            </div>
+            <div id="cond" class="cond">—</div>
+          </div>
+
+          <div class="weather-right">
+            <h2 id="cityName">—</h2>
+            <p class="meta"><span id="feels">Feels like —</span> • <span id="hum">Humidity —</span></p>
+            <p class="meta">Wind: <span id="wind">—</span> m/s • Pressure: <span id="pressure">—</span> hPa</p>
+            <p class="time" id="timeInfo">—</p>
+          </div>
+        </div>
+
+        <!-- Forecast container -->
+        <div class="forecast-container">
+          <h3>Daily Forecast</h3>
+          <div id="forecastRow" class="forecast-row"></div>
+          <h3>Hourly Forecast</h3>
+          <div id="hourlyForecastRow" class="forecast-row"></div>
+        </div>
+
+        <div class="extras">
+          <div class="card small">
+            <h4>Sunrise / Sunset</h4>
+            <p><span id="sunrise">—</span> / <span id="sunset">—</span></p>
+          </div>
+          <div class="card small">
+            <h4>Visibility</h4>
+            <p id="visibility">—</p>
+          </div>
+          <div class="card small">
+            <h4>Data Source</h4>
+            <p>OpenWeatherMap</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="footer">
+      <p>Made for disaster-aware communities • Use responsibly • <em>Customize & extend</em></p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

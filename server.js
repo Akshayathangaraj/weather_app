@@ -1,0 +1,52 @@
+// server.js - simple proxy for OpenWeatherMap
+import express from 'express';
+import fetch from 'node-fetch';
+import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const app = express();
+app.use(cors());
+const PORT = process.env.PORT || 5000;
+const KEY = process.env.OPENWEATHER_API_KEY;
+if(!KEY) console.error('Warning: OPENWEATHER_API_KEY not set in env');
+
+app.get('/api/weather', async (req,res)=>{
+  try{
+    const {city, lat, lon} = req.query;
+    let url = '';
+    if(city){
+      url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`;
+    } else if(lat && lon){
+      url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric`;
+    } else {
+      return res.status(400).json({error:'city or lat+lon required'});
+    }
+    const r = await fetch(url);
+    const j = await r.json();
+    res.json(j);
+  }catch(err){
+    res.status(500).json({error:err.message});
+  }
+});
+
+app.get('/api/forecast', async (req,res)=>{
+  try{
+    const {city, lat, lon} = req.query;
+    let url = '';
+    if(city){
+      url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`;
+    } else if(lat && lon){
+      url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric`;
+    } else {
+      return res.status(400).json({error:'city or lat+lon required'});
+    }
+    const r = await fetch(url);
+    const j = await r.json();
+    res.json(j);
+  }catch(err){
+    res.status(500).json({error:err.message});
+  }
+});
+
+app.listen(PORT, ()=>console.log(`Proxy running on ${PORT}`));

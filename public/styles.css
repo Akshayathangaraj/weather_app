@@ -1,0 +1,312 @@
+:root {
+  --text-primary: #e6eef8;
+  --text-muted: rgba(255,255,255,0.7);
+  --bg-gradient: linear-gradient(180deg,#0f172a 0%,#0f2b45 60%);
+  --card-bg: rgba(255,255,255,0.06);
+  --card-glass: rgba(255,255,255,0.04);
+  --btn-primary: linear-gradient(180deg,#1b9fff,#0078d4);
+  --btn-location: linear-gradient(180deg,#66ffcc,#00bfa5);
+  --alert-bg: rgba(255, 100, 100, 0.2);
+}
+
+/* Reset and body */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-gradient);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme overrides */
+body.light {
+  --text-primary: #000;
+  --text-muted: rgba(0,0,0,0.6);
+  --bg-gradient: linear-gradient(180deg,#e0f7fa,#b2ebf2);
+  --card-bg: rgba(0,0,0,0.05);
+  --card-glass: rgba(0,0,0,0.05);
+  --alert-bg: rgba(255, 80, 80, 0.4);
+}
+
+/* Cards and inputs */
+.card, .controls input {
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* --- Layout --- */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Brand --- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand .logo {
+  font-size: 36px;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,#ffcc66,#ffd86b);
+  color: #07263b;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  animation: floaty 4s ease-in-out infinite;
+}
+
+.brand h1 {
+  font-size: 22px;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.tag {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* --- Controls --- */
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.controls input {
+  width: 260px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--card-glass);
+  color: var(--text-primary);
+  outline: none;
+  box-shadow: inset 0 -2px 8px rgba(0,0,0,0.25);
+  font-size: 14px;
+}
+
+.controls button {
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: var(--btn-primary);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  font-size: 14px;
+}
+
+.controls button[title="Use my location"] {
+  background: var(--btn-location);
+}
+
+/* --- Alert Banner --- */
+.alert-banner {
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: var(--alert-bg);
+  color: #fff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 700;
+  animation: pulse 2s infinite;
+}
+
+body.light .alert-banner {
+  color: #2a0505;
+  background: var(--alert-bg);
+}
+
+/* --- Content --- */
+.content {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* --- History --- */
+.history {
+  background: var(--card-bg);
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 320px;
+  color: var(--text-primary);
+}
+
+.history li {
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.12s ease;
+  color: var(--text-primary);
+}
+
+/* --- Cards --- */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border-radius: 14px;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 18px rgba(2,6,23,0.6);
+  color: var(--text-primary);
+}
+
+/* ✅ Smaller info cards (Sunrise, Visibility, Source) */
+.card.small-card {
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  background: var(--card-glass);
+}
+
+/* ✅ Forecast container layout */
+.forecast-container {
+  display: flex;
+  flex-direction: column !important;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.forecast-container h3 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+/* ✅ Hourly forecast scrollable container */
+.hourly-forecast-container {
+  max-height: 230px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  padding-right: 6px;
+  border-radius: 12px;
+  background: var(--card-glass);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.2);
+}
+
+.hourly-forecast-container::-webkit-scrollbar {
+  width: 8px;
+}
+.hourly-forecast-container::-webkit-scrollbar-thumb {
+  background: #66ccff;
+  border-radius: 4px;
+}
+
+/* ✅ Each forecast row (horizontal scroll) */
+.forecast-row {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+}
+
+.forecast-row::-webkit-scrollbar {
+  height: 8px;
+}
+.forecast-row::-webkit-scrollbar-thumb {
+  background: #66ccff;
+  border-radius: 4px;
+}
+
+/* ✅ Forecast cards */
+.forecast-row .card {
+  flex: 0 0 auto;
+  min-width: 120px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+}
+
+.forecast-row .card:hover {
+  transform: translateY(-4px);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+/* Animations */
+@keyframes floaty {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive */
+@media (max-width: 880px) {
+  .content { grid-template-columns: 1fr; }
+  .controls input { width: 150px; }
+  .forecast-row .card { min-width: 100px; }
+}
+
+.extras {
+  display: flex;
+  flex-wrap: wrap; /* allows wrapping if screen is small */
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.extras .card {
+  flex: 1 1 150px; /* grow/shrink, minimum width 150px */
+  min-width: 150px;
+  max-width: 200px;
+}
+#hourlyForecastRow {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+#hourlyForecastRow .card {
+  flex: 0 0 auto; /* ensures no shrinking, stays horizontal */
+  min-width: 120px; /* or desired width */
+}
